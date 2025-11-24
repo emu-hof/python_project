@@ -34,20 +34,26 @@ def mark_complete(tasks):
     if tasks:
         try:
             task_number = int(input("Enter task number to mark as complete: "))
-            tasks[task_number - 1]["completed"] = True
-            print(f"'{tasks[task_number - 1]['title']}' marked as complete.")
-        except (IndexError, ValueError):
-            print("Invalid task number.")
+            if 1 <= task_number <= len(tasks):   
+                tasks[task_number - 1]["completed"] = True
+                print(f"'{tasks[task_number - 1]['title']}' marked as complete.")
+            else:
+                print("Invalid task number. Please choose a number from the list.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
 
 def delete_task(tasks):
     view_tasks(tasks)
     if tasks:
         try:
             task_number = int(input("Enter task number to delete: "))
-            removed = tasks.pop(task_number - 1)
-            print(f"'{removed['title']}' deleted successfully.")
-        except (IndexError, ValueError):
-            print("Invalid task number.")
+            if 1 <= task_number <= len(tasks):  
+                removed = tasks.pop(task_number - 1)
+                print(f"'{removed['title']}' deleted successfully.")
+            else:
+                print("Invalid task number. Please choose a valid number.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
 
 def show_summary(tasks):
     completed = sum(task["completed"] for task in tasks)
