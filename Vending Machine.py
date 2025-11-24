@@ -15,7 +15,7 @@ for item_number, (snack,price) in menu.items():
 item_picked=[]
 total_due=0.00
 while True:
-    item_choice=input("choose the an item. Please type stop once completed").strip(). lower()
+    item_choice=input("choose the an item. Please type done once completed ").strip(). lower()
     if item_choice == "done":
         break
     if item_choice in menu:
