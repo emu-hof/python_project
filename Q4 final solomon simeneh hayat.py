@@ -121,3 +121,6 @@ if not bookings:
 else:
     for title, tickets, cost in bookings:
         print(f"{title} - {tickets} ticket(s) - ETB {cost:,}")
+print(f"\nTotal tickets: {total_tickets}")
+print(f"Total cost: ETB {total_cost:,}")
+print("\nThanks, hope to see you again at Alem Cinema!\n")        
