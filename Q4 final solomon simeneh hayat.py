@@ -1,3 +1,4 @@
+# Group 4 Q4: Prepared by: Hayat; Solomon; Simeneh
 # 4. Movie Ticket Booking Simulation
     # Simulate a movie theater booking system that:
         # Shows a list of available movie titles, showtimes, and seat prices.
@@ -11,7 +12,7 @@
     # - Ticket price
     # - Seats
 
-# Movie data
+# Movie data   
 movies = { 
     "1": {"title": "Beka Fikir", "time": "2:00 PM", "price": 200, "seats": 100},
     "2": {"title": "Liyu Aleme", "time": "7:10 PM", "price": 200, "seats": 100},
@@ -23,10 +24,17 @@ total_cost = 0
 total_tickets = 0
 bookings = []
 
+def show_available_movies():
+    print("\nAvailable Movies with Seats:")
+    for key, info in movies.items():
+        if info["seats"] > 0:
+            print(f"{key}. {info['title']} ({info['time']}) - ETB {info['price']} - Seats Left: {info['seats']}")
+    print()
+
 print("\nWelcome to Alem Cinema!!!")
 print("-" * 25)
 
-# Continue/exit question
+# Continue or exit
 while True:
     continue_choice = input("\nDo you want to continue or exit? (c/x): ").strip().lower()
     if continue_choice == "c":
@@ -40,76 +48,68 @@ while True:
 # LOOP
 while True:
 
-    # Check if ALL movies are fully booked
+    # If ALL movies are fully booked
     if all(m["seats"] == 0 for m in movies.values()):
         print("\nAll movies are fully booked!")
         break
 
-    # Display list of movies
-    print("\nAvailable Movies:")
-    for key, info in movies.items():
-        print(f"{key}. {info['title']} ({info['time']}) - ETB {info['price']} - Seats Left: {info['seats']}")
+    # Show movies with seats
+    show_available_movies()
 
-    # Choose movie
-    choice = input("\nChoose a movie (1, 2, or 3): ").strip()
-    while choice not in movies:
-        print("Invalid choice! Please enter 1, 2, or 3.")
-        choice = input("Choose a movie (1, 2, or 3): ").strip()
+    # Dynamic movie selection
+    available_choices = [key for key, info in movies.items() if info["seats"] > 0]
+    choice_label = ", ".join(available_choices)
+
+    while True:
+        choice = input(f"Choose a movie ({choice_label}): ").strip()
+        if choice in available_choices:
+            break
+        print(f"Invalid choice! Please enter one of: {choice_label}")
 
     selected_movie = movies[choice]
     print("You selected:", selected_movie["title"])
 
-    # If no seats
-    if selected_movie["seats"] == 0:
-        print("\n No seats left for this movie! Please choose another movie with available seats.")
-        continue
+    # BOOKING
+    print(f"\nRemaining seats for {selected_movie['title']}: {selected_movie['seats']}")
 
-    # BOOKING LOOP FOR THIS MOVIE
     while True:
+        try:
+            number_of_tickets = int(input("How many tickets would you like? "))
 
-        # Remaining seats
-        print(f"\nRemaining seats for {selected_movie['title']}: {selected_movie['seats']}")
+            if number_of_tickets <= 0 or number_of_tickets > selected_movie["seats"]:
+                print(f"Enter a number between 1 and {selected_movie['seats']}")
+                continue
 
-        # Ticket input
-        number_of_tickets = input("How many tickets would you like? ")
+            break  # valid
+        except ValueError:
+            print(f"Enter a valid number between 1 and {selected_movie['seats']}")
 
-        while (not number_of_tickets.isdigit() or 
-               int(number_of_tickets) <= 0 or 
-               int(number_of_tickets) > selected_movie["seats"]):
-            print(f"Enter a number between 1 and {selected_movie['seats']}")
-            number_of_tickets = input("How many tickets would you like? ")
+    number_of_tickets = int(number_of_tickets)
 
-        number_of_tickets = int(number_of_tickets)
+    # Update seats
+    selected_movie["seats"] -= number_of_tickets
 
-        # Update seats
-        selected_movie["seats"] -= number_of_tickets
+    # Save booking
+    cost = selected_movie["price"] * number_of_tickets
+    total_cost += cost
+    total_tickets += number_of_tickets
+    bookings.append((selected_movie["title"], number_of_tickets, cost))
 
-        # Calculate and save booking
-        cost = selected_movie["price"] * number_of_tickets
-        total_cost += cost
-        total_tickets += number_of_tickets
-        bookings.append((selected_movie["title"], number_of_tickets, cost))
+    print(f"\nBooked {number_of_tickets} ticket(s) for {selected_movie['title']} - Cost: ETB {cost:,}")
 
-        print(f"\nBooked {number_of_tickets} ticket(s) for {selected_movie['title']} - Cost: ETB {cost:,}")
+    # If movie becomes FULL after booking
+    if selected_movie["seats"] == 0:
+        print(f"\n'{selected_movie['title']}' is now FULL!")
 
-        # If movie becomes full
-        if selected_movie["seats"] == 0:
-            print("\n This movie is now FULL! Please choose another movie.")
-            break
-
-        # More tickets for same movie?
-        # another_ticket = input("\nWant to book more tickets for {selected_movie['title']} movie? (yes(y)/no): ").strip().lower()
-        another_ticket = input(f"\nWant to book more tickets for {selected_movie['title']} movie? (yes(y)/no): ").strip().lower()
-        if another_ticket not in ("yes", "y"):
-            break
-
-    # Book another movie
-    another_movie = input("\nWant to book another movie? (yes(y)/no): ").strip().lower()
-
-    if another_movie not in ("yes", "y"):
+    # Check if all movies are now fully booked
+    if all(m["seats"] == 0 for m in movies.values()):
+        print("\nAll movies are now fully booked.")
         break
 
-    print("\nLoading movies...\n")
+    # Ask if user wants to book another movie
+    another_movie = input("\nDo you want to book another movie? (yes(y)/no): ").strip().lower()
+    if another_movie not in ("yes", "y"):
+        break
 
 # Summary
 print("\n" + "-" * 15)
@@ -121,7 +121,3 @@ if not bookings:
 else:
     for title, tickets, cost in bookings:
         print(f"{title} - {tickets} ticket(s) - ETB {cost:,}")
-
-print(f"\nTotal tickets: {total_tickets}")
-print(f"Total cost: ETB {total_cost:,}")
-print("\nThanks, hope to see you again at Alem Cinema!\n")
